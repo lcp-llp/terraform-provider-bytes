@@ -21,6 +21,7 @@ steps:
 
 
 - script: |
+    go version
     echo "Importing GPG Key..."
     gpg --import $(gpgKey.secureFilePath)
     echo "Building and Signing the Terraform provider..."
