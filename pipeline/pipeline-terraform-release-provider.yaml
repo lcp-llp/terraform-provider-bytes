@@ -38,7 +38,10 @@ steps:
 - script: |
     go version
     echo "Importing GPG Key..."
-    gpg --import $(gpgKey.secureFilePath)
+    gpg --version
+    ls -l $(gpgKey.secureFilePath)
+    gpg --verbose --import $(gpgKey.secureFilePath) || true
+    echo "listing keys"
     gpg --list-secret-keys --keyid-format LONG
     echo "Building and Signing the Terraform provider..."
     echo "$(GpgPassphrase)"
