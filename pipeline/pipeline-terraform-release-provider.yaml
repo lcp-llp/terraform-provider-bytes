@@ -14,7 +14,7 @@ steps:
   name: gpgKey
   inputs:
     secureFile: 'private-key.gpg'
-    
+    #
 - task: UseGoVersion@0
   inputs:
     version: '$(goVersion)'
