@@ -19,6 +19,14 @@ steps:
     echo "##vso[task.setvariable variable=releaseVersion]$version"
   displayName: 'Get Version Number from Tag'
 
+- script: |
+    sudo apt-get update
+    sudo apt-get -y install wget
+    wget https://golang.org/dl/go1.21.3.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
+    echo "##vso[task.prependpath]/usr/local/go/bin"
+  displayName: 'Install Go'
+
 
 - script: |
     go version
