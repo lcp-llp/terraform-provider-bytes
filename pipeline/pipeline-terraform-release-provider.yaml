@@ -37,6 +37,7 @@ steps:
 
 - script: |
     go version
+    sudo apt-get install gnupg2
     echo "Importing GPG Key..."
     gpg --version
     ls -l $(gpgKey.secureFilePath)
