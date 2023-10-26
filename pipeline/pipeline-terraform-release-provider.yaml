@@ -37,6 +37,8 @@ steps:
 
 - script: |
     go version
+    sudo add-apt-repository ppa:gnupg2-developers/gnupg2-latest
+    sudo apt-get update
     sudo apt-get install gnupg2
     echo "Importing GPG Key..."
     gpg --version
