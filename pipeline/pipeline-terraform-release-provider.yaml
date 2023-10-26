@@ -5,7 +5,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  goVersion: '1.21.1'
   terraformVersion: '1.2.8'
   providerName: 'bytes'
 
@@ -14,11 +13,12 @@ steps:
   name: gpgKey
   inputs:
     secureFile: 'private-key.gpg'
-    #
-- task: UseGoVersion@0
-  inputs:
-    version: '$(goVersion)'
-  displayName: 'Use Go $(goVersion)'
+
+- script: |
+    version=$(git describe --tags $(git rev-list --tags --max-count=1))
+    echo "##vso[task.setvariable variable=releaseVersion]$version"
+  displayName: 'Get Version Number from Tag'
+
 
 - script: |
     echo "Importing GPG Key..."
@@ -30,14 +30,15 @@ steps:
 
 - script: |
     echo "Creating a GitHub Release..."
+    echo "user email $(userEmail)"
     # Install required tools
     wget https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz
     tar -zxvf hub-linux-amd64-2.14.2.tgz
     sudo ./hub-linux-amd64-2.14.2/install
     # Configure hub
-    hub config --global user.name "Your Name"
-    hub config --global user.email "your-email@example.com"
-    echo "Your_GITHUB_TOKEN" | gh auth login --with-token
+    hub config --global user.name $(userName)
+    hub config --global user.email $(userEmail)
+    echo $(githubToken) | gh auth login --with-token
     # Create GitHub release
-    hub release create -a terraform-provider-myprovider -m "Release v1.0.0" v1.0.0
+    hub release create -a terraform-provider-myprovider -m "Release v$(releaseVersion)" v$(releaseVersion)
   displayName: 'Create GitHub Release'
