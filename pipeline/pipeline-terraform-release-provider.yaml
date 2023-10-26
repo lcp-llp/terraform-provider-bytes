@@ -38,9 +38,10 @@ steps:
     go version
     echo "Importing GPG Key..."
     gpg --import $(gpgKey.secureFilePath)
+    gpg --list-secret-keys --keyid-format LONG
     echo "Building and Signing the Terraform provider..."
-    go build -o terraform-provider-$(providerName)
     echo "$(GpgPassphrase)"
+    go build -o terraform-provider-$(providerName)
     gpg --batch --yes --passphrase "$(GpgPassphrase)" --detach-sign terraform-provider-myprovider
   displayName: 'Build and Sign Terraform Provider'
 
