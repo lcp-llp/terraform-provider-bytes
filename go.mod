@@ -1,6 +1,6 @@
 module terraform-provider-bytes
 
-go 1.21.3
+go 1.23
 
 require github.com/hashicorp/terraform-plugin-sdk/v2 v2.29.0
 
