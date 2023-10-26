@@ -25,6 +25,7 @@ steps:
     gpg --import $(gpgKey.secureFilePath)
     echo "Building and Signing the Terraform provider..."
     go build -o terraform-provider-$(providerName)
+    echo "$(GpgPassphrase)"
     gpg --batch --yes --passphrase "$(GpgPassphrase)" --detach-sign terraform-provider-myprovider
   displayName: 'Build and Sign Terraform Provider'
 
