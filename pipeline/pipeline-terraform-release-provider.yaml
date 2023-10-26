@@ -7,6 +7,7 @@ pool:
 variables:
   terraformVersion: '1.2.8'
   providerName: 'bytes'
+  gnupgVersion: '2.4.3'
 
 steps:
 - task: DownloadSecureFile@1
@@ -19,6 +20,26 @@ steps:
     ls -lh $(gpgKey.secureFilePath)
     sha256sum $(gpgKey.secureFilePath)
   displayName: 'Check GPG Key File'
+
+- script: |
+    sudo apt-get update
+    sudo apt-get install -y wget build-essential libbz2-dev zlib1g-dev libsqlite3-dev libssl-dev libreadline-dev libffi-dev
+  displayName: 'Install Dependencies'
+
+- script: |
+    wget https://gnupg.org/ftp/gcrypt/gnupg/gnupg-$(gnupgVersion).tar.bz2
+    tar -xvjf gnupg-$(gnupgVersion).tar.bz2
+    cd gnupg-$(gnupgVersion)
+    ./configure
+    make
+    sudo make install
+  env:
+    gnupgVersion: $(gnupgVersion)
+  displayName: 'Download and Install GnuPG'
+
+- script: |
+    gpg --version
+  displayName: 'Verify GnuPG Installation'
 
 - script: |
     version=$(git describe --tags $(git rev-list --tags --max-count=1))
@@ -37,9 +58,6 @@ steps:
 
 - script: |
     go version
-    sudo add-apt-repository ppa:gnupg2-developers/gnupg2-latest
-    sudo apt-get update
-    sudo apt-get install gnupg2
     echo "Importing GPG Key..."
     gpg --version
     ls -l $(gpgKey.secureFilePath)
