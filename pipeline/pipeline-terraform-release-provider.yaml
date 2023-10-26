@@ -1,0 +1,43 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  goVersion: '1.21.1'
+  terraformVersion: '1.2.8'
+  providerName: 'bytes'
+
+steps:
+- task: DownloadSecureFile@1
+  name: gpgKey
+  inputs:
+    secureFile: 'private-key.gpg'
+    
+- task: UseGoVersion@0
+  inputs:
+    version: '$(goVersion)'
+  displayName: 'Use Go $(goVersion)'
+
+- script: |
+    echo "Importing GPG Key..."
+    gpg --import $(gpgKey.secureFilePath)
+    echo "Building and Signing the Terraform provider..."
+    go build -o terraform-provider-$(providerName)
+    gpg --batch --yes --passphrase "$(GpgPassphrase)" --detach-sign terraform-provider-myprovider
+  displayName: 'Build and Sign Terraform Provider'
+
+- script: |
+    echo "Creating a GitHub Release..."
+    # Install required tools
+    wget https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz
+    tar -zxvf hub-linux-amd64-2.14.2.tgz
+    sudo ./hub-linux-amd64-2.14.2/install
+    # Configure hub
+    hub config --global user.name "Your Name"
+    hub config --global user.email "your-email@example.com"
+    echo "Your_GITHUB_TOKEN" | gh auth login --with-token
+    # Create GitHub release
+    hub release create -a terraform-provider-myprovider -m "Release v1.0.0" v1.0.0
+  displayName: 'Create GitHub Release'
