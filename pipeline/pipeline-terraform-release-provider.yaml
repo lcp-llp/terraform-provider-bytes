@@ -24,8 +24,26 @@ steps:
 - script: |
     sudo apt-get update
     sudo apt-get install -y wget build-essential libbz2-dev zlib1g-dev libsqlite3-dev libssl-dev libreadline-dev libffi-dev
-    sudo apt-get install -y libgpg-error-dev libassuan-dev libksba-dev libnpth0-dev
+    sudo apt-get install -y libassuan-dev libnpth0-dev
   displayName: 'Install Dependencies'
+
+- script: |
+    wget https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.46.tar.bz2
+    tar -xvjf libgpg-error-1.46.tar.bz2
+    cd libgpg-error-1.46
+    ./configure
+    make
+    sudo make install
+  displayName: 'Install libgpg-error'
+
+- script: |
+    wget https://gnupg.org/ftp/gcrypt/libksba/libksba-1.6.3.tar.bz2
+    tar -xvjf libksba-1.6.3.tar.bz2
+    cd libksba-1.6.3
+    ./configure
+    make
+    sudo make install
+  displayName: 'Install libksba'
 
 - script: |
     wget https://gnupg.org/ftp/gcrypt/gnupg/gnupg-$(gnupgVersion).tar.bz2
