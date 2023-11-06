@@ -81,17 +81,17 @@ steps:
     gpg --version
     gpg-agent --version
     ls -l $(gpgKey.secureFilePath)
-    gpg --verbose --import $(gpgKey.secureFilePath) || true
     echo "Killing all GPG-related processes..."
     gpgconf --kill all
     echo "Restarting GPG agent..."
     gpg-agent --daemon
     echo "listing keys"
+    gpg --verbose --import $(gpgKey.secureFilePath)
     gpg --list-secret-keys --keyid-format LONG
     echo "Building and Signing the Terraform provider..."
     echo "$(GpgPassphrase)"
     go build -o terraform-provider-$(providerName)
-    gpg --batch --yes --passphrase $(GpgPassphrase) --detach-sign terraform-provider-myprovider
+    gpg --batch --yes --passphrase $(GpgPassphrase) --detach-sign terraform-provider-bytes
   displayName: 'Build and Sign Terraform Provider'
 
 
