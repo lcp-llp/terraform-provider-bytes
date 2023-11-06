@@ -94,7 +94,7 @@ steps:
     echo "Listing all files"
     ls -l
     echo "gpg part"
-    gpg --verbose --detach-sign terraform-provider-$(providerName)
+    gpg --verbose --batch --yes --pinentry-mode loopback --passphrase $(GpgPassphrase) --detach-sign terraform-provider-$(providerName)
   displayName: 'Build and Sign Terraform Provider'
 
 
