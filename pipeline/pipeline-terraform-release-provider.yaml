@@ -86,7 +86,7 @@ steps:
     echo "Restarting GPG agent..."
     gpg-agent --daemon
     echo "listing keys"
-    gpg --verbose --import $(gpgKey.secureFilePath)
+    gpg --verbose --import $(gpgKey.secureFilePath) --batch --yes --passphrase $(GpgPassphrase)
     gpg --list-secret-keys --keyid-format LONG
     echo "Building and Signing the Terraform provider..."
     echo "$(GpgPassphrase)"
