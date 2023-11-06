@@ -92,7 +92,7 @@ steps:
     echo "$(GpgPassphrase)"
     go build -o terraform-provider-$(providerName)
     echo "gpg part"
-    gpg --batch --yes --passphrase $(GpgPassphrase) --detach-sign terraform-provider-bytes
+    gpg --verbose --batch --yes --passphrase $(GpgPassphrase) --detach-sign terraform-provider-$(providerName)
   displayName: 'Build and Sign Terraform Provider'
 
 
