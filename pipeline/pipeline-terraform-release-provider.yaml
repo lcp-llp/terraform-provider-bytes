@@ -80,35 +80,65 @@ steps:
     echo "Importing GPG Key..."
     gpg --version
     gpg-agent --version
-    ls -l $(gpgKey.secureFilePath)
     echo "Killing all GPG-related processes..."
     gpgconf --kill all
     echo "Restarting GPG agent..."
     gpg-agent --daemon
-    echo "listing keys"
     gpg --verbose --batch --yes --passphrase $(GpgPassphrase) --import $(gpgKey.secureFilePath)
-    gpg --list-secret-keys --keyid-format LONG
     echo "Building and Signing the Terraform provider..."
-    echo "$(GpgPassphrase)"
-    go build -o terraform-provider-$(providerName)
-    echo "Listing all files"
     ls -l
-    echo "gpg part"
-    gpg --verbose --batch --yes --pinentry-mode loopback --passphrase $(GpgPassphrase) --detach-sign terraform-provider-$(providerName)
   displayName: 'Build and Sign Terraform Provider'
 
+- script: |
+    echo "Building provider for multiple platforms..."
+    platforms=('linux/amd64' 'linux/arm64' 'linux/arm' 'darwin/amd64' 'darwin/arm64' 'windows/amd64')
+    for platform in "${platforms[@]}"
+    do
+      GOOS=$(echo $platform | cut -d '/' -f1)
+      GOARCH=$(echo $platform | cut -d '/' -f2)
+      output_name="terraform-provider-$(providerName)_$(releaseVersion)"
+      if [ "$GOOS" == "windows" ]; then
+        output_name+='.exe'
+      fi
+
+      echo "Building for $GOOS/$GOARCH..."
+      env GOOS=$GOOS GOARCH=$GOARCH go build -o $output_name .
+
+      # Zip the binary
+      zip "terraform-provider-$(providerName)_$(releaseVersion)_${GOOS}_${GOARCH}.zip" $output_name
+    done
+  displayName: 'Cross-compile Provider'
 
 - script: |
-    echo "Creating a GitHub Release..."
-    echo "user email $(userEmail)"
-    # Install required tools
-    wget https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz
-    tar -zxvf hub-linux-amd64-2.14.2.tgz
-    sudo ./hub-linux-amd64-2.14.2/install
-    # Configure hub
-    hub config --global user.name $(userName)
-    hub config --global user.email $(userEmail)
-    echo $(githubToken) | gh auth login --with-token
-    # Create GitHub release
-    hub release create -a terraform-provider-myprovider -m "Release v$(releaseVersion)" v$(releaseVersion)
-  displayName: 'Create GitHub Release'
+    echo "Creating checksums and manifest..."
+    # Initialize the manifest content
+    manifest_content='{"version": "'$(releaseVersion)'","protocols":["5.0"],"platforms":['
+    shasum_content=""
+
+    for file in terraform-provider-$(providerName)_$(releaseVersion)_*.zip
+    do
+      os_arch=$(echo $file | sed -E 's/.*_([^_]+_[^_]+)\.zip/\1/')
+      os=$(echo $os_arch | cut -d '_' -f1)
+      arch=$(echo $os_arch | cut -d '_' -f2)
+
+      # Add to manifest
+      manifest_content+='{"os":"'$os'","arch":"'$arch'"},'
+
+      # Create SHASUM for current file
+      shasum -a 256 $file >> "terraform-provider-$(providerName)_$(releaseVersion)_SHA256SUMS"
+    done
+
+    # Trim the last comma and close the json array
+    manifest_content=${manifest_content%,}]}
+    manifest_content+=']}'
+
+    # Create manifest file
+    echo $manifest_content > "terraform-provider-$(providerName)_$(releaseVersion)_manifest.json"
+
+    # Append SHASUM for the manifest
+    shasum -a 256 "terraform-provider-$(providerName)_$(releaseVersion)_manifest.json" >> "terraform-provider-$(providerName)_$(releaseVersion)_SHA256SUMS"
+
+    # Sign the SHA256SUMS file
+    gpg --batch --yes --detach-sign "terraform-provider-$(providerName)_$(releaseVersion)_SHA256SUMS"
+    ls -l
+ 
