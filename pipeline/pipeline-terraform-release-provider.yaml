@@ -145,10 +145,10 @@ steps:
     # Creating a directory to store all artifacts
     mkdir artifacts
     # Copying all necessary files into the artifacts directory
-    cp terraform-provider-${providerName}_${releaseVersion}_*.zip artifacts/
-    cp terraform-provider-${providerName}_${releaseVersion}_SHA256SUMS artifacts/
-    cp terraform-provider-${providerName}_${releaseVersion}_SHA256SUMS.sig artifacts/
-    cp terraform-provider-${providerName}_${releaseVersion}_manifest.json artifacts/
+    cp terraform-provider-$(providerName)_$(releaseVersion)_*.zip artifacts/
+    cp terraform-provider-$(providerName)_$(releaseVersion)_SHA256SUMS artifacts/
+    cp terraform-provider-$(providerName)_$(releaseVersion)_SHA256SUMS.sig artifacts/
+    cp terraform-provider-$(providerName)_$(releaseVersion)_manifest.json artifacts/
   displayName: 'Archive Artifacts'
 
 - task: PublishPipelineArtifact@1
