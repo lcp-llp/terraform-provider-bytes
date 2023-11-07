@@ -111,7 +111,7 @@ steps:
 - script: |
     echo "Creating checksums and manifest..."
     # Initialize the manifest content
-    manifest_content='{"version": "'$(releaseVersion)'","protocols":["5.0"],"platforms":['
+    manifest_content=""
     shasum_content=""
 
     for file in terraform-provider-$(providerName)_$(releaseVersion)_*.zip
@@ -120,16 +120,12 @@ steps:
       os=$(echo $os_arch | cut -d '_' -f1)
       arch=$(echo $os_arch | cut -d '_' -f2)
 
-      # Add to manifest
-      manifest_content+='{"os":"'$os'","arch":"'$arch'"},'
-
       # Create SHASUM for current file
       shasum -a 256 $file >> "terraform-provider-$(providerName)_$(releaseVersion)_SHA256SUMS"
     done
 
-    # Trim the last comma and close the json array
-    manifest_content=${manifest_content%,}]}
-    manifest_content+=']}'
+    # Create manifest_content from terraform-registry-manifest.json
+    manifest_content=$(cat terraform-registry-manifest.json)
 
     # Create manifest file
     echo $manifest_content > "terraform-provider-$(providerName)_$(releaseVersion)_manifest.json"
