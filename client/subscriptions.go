@@ -47,6 +47,7 @@ type BasketPayload struct {
 	PONumber     string `json:"poNumber"`
 	BillingFreq  string `json:"billingFrequency"`
 	Term         string `json:"term"`
+	DivisionID   string `json:"divisionId"`
 }
 
 func (c *Client) CreateBasket(friendlyName string, principalId string, poNumber string) (*BasketDetails, error) {
@@ -68,6 +69,7 @@ func (c *Client) createBasketHelper(friendlyName string, principalId string, poN
 		PONumber:     poNumber,
 		BillingFreq:  "monthly",
 		Term:         "Perpetual",
+		DivisionID:   "3431",
 	}
 	data, err := json.Marshal(payload)
 	if err != nil {
