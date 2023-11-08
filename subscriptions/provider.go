@@ -18,28 +18,33 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("IDENTITY_HOST", nil),
+				Description: "The identity API URL provided by the host",
 			},
 			"commerce_api_url": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("COMMERCE_HOST", nil),
+				Description: "The commerce API URL provided by the host",
 			},
 			"username": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("CUSTOM_USERNAME", nil),
+				Description: "Username used for authentication to API Endpoints",
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("CUSTOM_PASSWORD", nil),
+				Description: "Password used for authentication to API Endpoints",
 			},
 			"contract_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("CONTRACT_ID", nil),
+				Description: "Contract ID used for authentication to API Endpoints",
 			},
 		},
 		// Define the function to call the resource.

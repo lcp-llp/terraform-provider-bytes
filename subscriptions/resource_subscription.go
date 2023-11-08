@@ -16,32 +16,39 @@ func resourceSubscription() *schema.Resource {
 		DeleteContext: resourceSubscriptionDelete,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Unique ID assigned by Bytes to the order",
 			},
 			"friendly_name": {
-				Type:     schema.TypeString,
-				Required: true,
-				Computed: false,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Computed:    false,
+				ForceNew:    true,
+				Description: "Friendly name of the subscription to create. This is used as the name of the subscription in the Bytes/Azure Portal",
 			},
 			"po_number": {
-				Type:     schema.TypeString,
-				Required: true,
-				Computed: false,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Computed:    false,
+				ForceNew:    true,
+				Description: "The PO number which can be used to assign a cost to a purchase for billing purposes",
 			},
 			"default_admin": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: false,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    false,
+				ForceNew:    true,
+				Description: "The default admin which is assigned to a newly created subscription",
 			},
 			"subscription_id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The automatically generated subscription ID returned by Azure",
 			},
 		},
+		Description: "Creates a new Azure subscription.\n\n" +
+			"This resources is intended to be used to create a new Azure subscription",
 	}
 }
 

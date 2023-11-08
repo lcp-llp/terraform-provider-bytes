@@ -6,9 +6,9 @@ description: |-
   
 ---
 
-# bytes Provider
+# Bytes Provider
 
-
+The Bytes provider can be used to query Bytes orders and create Azure Subscriptions
 
 ## Example Usage
 
@@ -41,8 +41,8 @@ data "bytes_order" "example" {
 
 ### Required
 
-- `commerce_api_url` (String)
-- `contract_id` (Number, Sensitive)
-- `identity_api_url` (String)
-- `password` (String, Sensitive)
-- `username` (String)
+- `commerce_api_url` (String) The commerce API URL provided by the host
+- `contract_id` (Number, Sensitive) Contract ID used for authentication to API Endpoints
+- `identity_api_url` (String) The identity API URL provided by the host
+- `password` (String, Sensitive) Password used for authentication to API Endpoints
+- `username` (String) Username used for authentication to API Endpoints
