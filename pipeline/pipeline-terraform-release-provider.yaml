@@ -17,7 +17,7 @@ jobs:
       name: gpgKey
       inputs:
         secureFile: 'private-key.gpg'
-
+    #
     - script: |
         echo "Checking the GPG key file..."
         ls -lh $(gpgKey.secureFilePath)
