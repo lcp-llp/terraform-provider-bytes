@@ -3,8 +3,8 @@ trigger:
     include:
     - '*'
   branches:
-    include:
-    - main
+    exclude:
+    - '*'
 
 pool:
   vmImage: 'ubuntu-latest'
