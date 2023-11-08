@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"terraform-provider-bytes/client"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"terraform-provider-bytes/client"
 )
 
 func datasourceOrder() *schema.Resource {
@@ -15,34 +16,43 @@ func datasourceOrder() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"order_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Existing Bytes order ID",
 			},
 			"id": {
-				Type:     schema.TypeInt,
-				Computed: true,
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "Existing Bytes ID",
 			},
 			"contract_name": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Bytes contract name used for the order",
 			},
 			"subscription_id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Existing Subscription ID to query",
 			},
 			"friendly_name": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Friendly name of the subscription",
 			},
 			"po_number": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Purchase order number for the subscription order",
 			},
 			"create_date": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The date the order was created",
 			},
 		},
+		Description: "Get information about a known Bytes order.\n\n" +
+			"Use this data source to get information such as subscription name, id and creation date.",
 	}
 }
 
