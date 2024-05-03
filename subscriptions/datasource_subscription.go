@@ -10,10 +10,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+// This datasource is used to get information about a known Bytes order
 func datasourceOrder() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: datasourceOrderRead,
 
+		// Initialise all vars for datasource
 		Schema: map[string]*schema.Schema{
 			"order_id": {
 				Type:        schema.TypeString,
@@ -56,6 +58,7 @@ func datasourceOrder() *schema.Resource {
 	}
 }
 
+// datasourceOrderRead is used to read the datasource and set the schema
 func datasourceOrderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
 
