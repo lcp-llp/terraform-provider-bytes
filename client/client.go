@@ -39,10 +39,11 @@ type OrderDetails struct {
 	ContractName string `json:"contractName"`
 	CreateDate   string `json:"createDate"`
 	Items        []struct {
-		SubscriptionID string `json:"subscriptionId"`
-		PONumber       string `json:"poNumber"`
-		FriendlyName   string `json:"friendlyName"`
-		PrincipalID    string `json:"principalId"`
+		SubscriptionID      string `json:"subscriptionId"`
+		PONumber            string `json:"poNumber"`
+		FriendlyName        string `json:"friendlyName"`
+		PrincipalID         string `json:"principalId"`
+		CloudSubscriptionID string `json:"cloudSubscriptionId"`
 	} `json:"items"`
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+// This resource is used to create a new Azure subscription
 func resourceSubscription() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceSubscriptionCreate,
@@ -46,6 +47,13 @@ func resourceSubscription() *schema.Resource {
 				Computed:    true,
 				Description: "The automatically generated subscription ID returned by Azure",
 			},
+			"budget_code": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Computed:    false,
+				ForceNew:    true,
+				Description: "The budget code to use for subscription billing",
+			},
 		},
 		Description: "Creates a new Azure subscription.\n\n" +
 			"This resources is intended to be used to create a new Azure subscription",
@@ -62,6 +70,7 @@ func resourceSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m i
 		FriendlyName: d.Get("friendly_name").(string),
 		PONumber:     d.Get("po_number").(string),
 		PrincipalID:  d.Get("default_admin").(string),
+		BudgetCode:   d.Get("budget_code").(string),
 	}
 
 	// Call the function create the subscription with payload
@@ -87,7 +96,7 @@ func resourceSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("po_number", subscription.Items[0].PONumber)
 		d.Set("default_admin", subscription.Items[0].PrincipalID)
 	}
-	// Call the resourceARecordRead function
+	// Call the resourceSubscriptionRead function
 	resourceSubscriptionRead(ctx, d, m)
 
 	return nil
