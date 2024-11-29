@@ -15,6 +15,7 @@ type SubscriptionDetails struct {
 	PrincipalID  string
 	PONumber     string
 	BudgetCode   string
+	DivisionID   int
 }
 
 // Basket Struct for Basket Post Request response
@@ -49,7 +50,7 @@ type BasketPayload struct {
 	PONumber     string `json:"poNumber"`
 	BillingFreq  string `json:"billingFrequency"`
 	Term         string `json:"term"`
-	DivisionID   string `json:"divisionId"`
+	DivisionID   *int   `json:"divisionId"`
 	BudgetCode   string `json:"budgetCode"`
 }
 
@@ -72,7 +73,7 @@ func (c *Client) createBasketHelper(friendlyName string, principalId string, poN
 		PONumber:     poNumber,
 		BillingFreq:  "monthly",
 		Term:         "Perpetual",
-		DivisionID:   "3565",
+		DivisionID:   nil,
 		BudgetCode:   budgetCode,
 	}
 	data, err := json.Marshal(payload)

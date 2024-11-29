@@ -54,6 +54,13 @@ func resourceSubscription() *schema.Resource {
 				ForceNew:    true,
 				Description: "The budget code to use for subscription billing",
 			},
+			"division_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Computed:    false,
+				ForceNew:    true,
+				Description: "The division ID to use for subscription billing",
+			},
 		},
 		Description: "Creates a new Azure subscription.\n\n" +
 			"This resources is intended to be used to create a new Azure subscription",
@@ -71,6 +78,7 @@ func resourceSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m i
 		PONumber:     d.Get("po_number").(string),
 		PrincipalID:  d.Get("default_admin").(string),
 		BudgetCode:   d.Get("budget_code").(string),
+		DivisionID:   d.Get("division_id").(int),
 	}
 
 	// Call the function create the subscription with payload

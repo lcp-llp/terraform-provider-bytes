@@ -43,7 +43,7 @@ type OrderDetails struct {
 		PONumber            string `json:"poNumber"`
 		FriendlyName        string `json:"friendlyName"`
 		PrincipalID         string `json:"principalId"`
-		CloudSubscriptionID string `json:"cloudSubscriptionId"`
+		CloudSubscriptionID *int   `json:"cloudSubscriptionId"`
 	} `json:"items"`
 }
 
