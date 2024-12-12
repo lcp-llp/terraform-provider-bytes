@@ -14,6 +14,7 @@ func resourceSubscription() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceSubscriptionCreate,
 		ReadContext:   resourceSubscriptionRead,
+		UpdateContext: resourceSubscriptionUpdate,
 		DeleteContext: resourceSubscriptionDelete,
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -54,6 +55,12 @@ func resourceSubscription() *schema.Resource {
 				ForceNew:    true,
 				Description: "The budget code to use for subscription billing",
 			},
+			"division_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Computed:    false,
+				Description: "The division ID to use for subscription billing",
+			},
 		},
 		Description: "Creates a new Azure subscription.\n\n" +
 			"This resources is intended to be used to create a new Azure subscription",
@@ -71,6 +78,7 @@ func resourceSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m i
 		PONumber:     d.Get("po_number").(string),
 		PrincipalID:  d.Get("default_admin").(string),
 		BudgetCode:   d.Get("budget_code").(string),
+		DivisionID:   d.Get("division_id").(int),
 	}
 
 	// Call the function create the subscription with payload
@@ -101,11 +109,32 @@ func resourceSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m i
 
 	return nil
 }
+
 func resourceSubscriptionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 	return diags
 }
+
+func resourceSubscriptionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.Client)
+
+	subscriptionDetails := client.SubscriptionDetails{
+		FriendlyName: d.Get("friendly_name").(string),
+		PONumber:     d.Get("po_number").(string),
+		PrincipalID:  d.Get("default_admin").(string),
+		BudgetCode:   d.Get("budget_code").(string),
+		DivisionID:   d.Get("division_id").(int),
+	}
+
+	_, err := c.UpdateSubscription(d.Id(), subscriptionDetails)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceSubscriptionRead(ctx, d, m)
+}
+
 func resourceSubscriptionDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	// No-op, do nothing when deleting, not currently supported by Bytes API
 	return nil
