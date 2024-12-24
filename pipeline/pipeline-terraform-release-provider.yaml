@@ -10,9 +10,13 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  terraformVersion: '1.2.8'
-  providerName: 'bytes'
-  gnupgVersion: '2.4.3'
+  - group: 'terraform'
+  - name: terraformVersion 
+    value: '1.2.8'
+  - name: providerName
+    value: 'bytes'
+  - name: gnupgVersion
+    value: '2.4.3'
 
 jobs:
   - job: build_provider
