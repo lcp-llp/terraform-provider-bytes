@@ -12,7 +12,7 @@ pool:
 variables:
   - group: 'terraform'
   - name: terraformVersion 
-    value: '1.2.8'
+    value: '1.9.2'
   - name: providerName
     value: 'bytes'
   - name: gnupgVersion
@@ -25,7 +25,7 @@ jobs:
     - task: DownloadSecureFile@1
       name: gpgKey
       inputs:
-        secureFile: 'private-key.gpg'
+        secureFile: 'private-key2.gpg'
 
     - script: |
         echo "Checking the GPG key file..."
@@ -104,7 +104,7 @@ jobs:
 
     - script: |
         echo "Building provider for multiple platforms..."
-        platforms=('linux/amd64' 'linux/arm64' 'linux/arm' 'darwin/amd64' 'darwin/arm64' 'windows/amd64')
+        platforms=('linux/amd64' 'linux/arm64' 'linux/arm' 'darwin/amd64' 'darwin/arm64' 'windows/amd64' 'windows/386')
         for platform in "${platforms[@]}"
         do
           GOOS=$(echo $platform | cut -d '/' -f1)
