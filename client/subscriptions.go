@@ -16,6 +16,7 @@ type SubscriptionDetails struct {
 	PONumber     string
 	BudgetCode   string
 	DivisionID   int
+	ContractID   int
 }
 
 // Basket Struct for Basket Post Request response
@@ -54,13 +55,13 @@ type BasketPayload struct {
 	BudgetCode   string `json:"budgetCode"`
 }
 
-func (c *Client) CreateBasket(friendlyName string, principalId string, poNumber string, budgetCode string, divisionId *int) (*BasketDetails, error) {
-	return c.createBasketHelper(friendlyName, principalId, poNumber, budgetCode, divisionId, 0)
+func (c *Client) CreateBasket(friendlyName string, principalId string, poNumber string, budgetCode string, divisionId *int, contractId int) (*BasketDetails, error) {
+	return c.createBasketHelper(friendlyName, principalId, poNumber, budgetCode, divisionId, contractId, 0)
 }
 
 // CreateBasket creates a basket ready for checkout
-func (c *Client) createBasketHelper(friendlyName string, principalId string, poNumber string, budgetCode string, divisionId *int, retryCount int) (*BasketDetails, error) {
-	url := fmt.Sprintf("%s/api/v2/contracts/%d/baskets", c.CommerceAPIURL, c.ContractID)
+func (c *Client) createBasketHelper(friendlyName string, principalId string, poNumber string, budgetCode string, divisionId *int, contractId int, retryCount int) (*BasketDetails, error) {
+	url := fmt.Sprintf("%s/api/v2/contracts/%d/baskets", c.CommerceAPIURL, contractId)
 
 	// Create a payload for the request
 	payload := BasketPayload{
@@ -149,7 +150,7 @@ func (c *Client) createBasketHelper(friendlyName string, principalId string, poN
 
 		// Check if we're below the maximum retry count (e.g., 3 retries)
 		if retryCount < 3 {
-			return c.createBasketHelper(friendlyName, principalId, poNumber, budgetCode, divisionId, retryCount+1)
+			return c.createBasketHelper(friendlyName, principalId, poNumber, budgetCode, divisionId, contractId, retryCount+1)
 		} else {
 			return nil, fmt.Errorf("max retries reached while trying to create basket")
 		}
@@ -202,7 +203,7 @@ func (c *Client) CheckoutBasket(basketdetails *BasketDetails) (*Checkout, error)
 // CreateSubscription creates a subscription by first creating a basket and then proceeding to checkout
 func (c *Client) CreateSubscription(details SubscriptionDetails) (*OrderDetails, error) {
 	// First, create a basket
-	basketInfo, err := c.CreateBasket(details.FriendlyName, details.PrincipalID, details.PONumber, details.BudgetCode, &details.DivisionID)
+	basketInfo, err := c.CreateBasket(details.FriendlyName, details.PrincipalID, details.PONumber, details.BudgetCode, &details.DivisionID, details.ContractID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create basket: %s", err)
 	}
