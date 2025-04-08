@@ -33,6 +33,7 @@ resource "bytes_subscription" "example" {
 - `friendly_name` (String) Friendly name of the subscription to create. This is used as the name of the subscription in the Bytes/Azure Portal
 - `po_number` (String) The PO number which can be used to assign a cost to a purchase for billing purposes
 - `budget_code` (String) The budget code to assign to the order for billing purposes
+- `contract_id` (Integer) The contract ID to use for the subscription
 
 ### Optional
 
