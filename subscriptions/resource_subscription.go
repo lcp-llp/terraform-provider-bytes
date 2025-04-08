@@ -61,6 +61,11 @@ func resourceSubscription() *schema.Resource {
 				Computed:    false,
 				Description: "The division ID to use for subscription billing",
 			},
+			"contract_id": {
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The contract ID to use for the subscription",
+			},
 		},
 		Description: "Creates a new Azure subscription.\n\n" +
 			"This resources is intended to be used to create a new Azure subscription",
@@ -79,6 +84,7 @@ func resourceSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m i
 		PrincipalID:  d.Get("default_admin").(string),
 		BudgetCode:   d.Get("budget_code").(string),
 		DivisionID:   d.Get("division_id").(int),
+		ContractID:   d.Get("contract_id").(int),
 	}
 
 	// Call the function create the subscription with payload
@@ -125,6 +131,7 @@ func resourceSubscriptionUpdate(ctx context.Context, d *schema.ResourceData, m i
 		PrincipalID:  d.Get("default_admin").(string),
 		BudgetCode:   d.Get("budget_code").(string),
 		DivisionID:   d.Get("division_id").(int),
+		ContractID:   d.Get("contract_id").(int),
 	}
 
 	_, err := c.UpdateSubscription(d.Id(), subscriptionDetails)
