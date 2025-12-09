@@ -10,14 +10,17 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: 'terraform'
+  - group: 'Automation.TerraformProviders'
   - name: terraformVersion 
-    value: '1.9.2'
+    value: '1.14.0'
   - name: providerName
     value: 'bytes'
   - name: gnupgVersion
     value: '2.4.3'
-
+  - name: repoName
+    value: 'lcp-llp/terraform-provider-bytes'  # Replace with your actual GitHub org/user and repo name
+  - name: secureFileName
+    value: 'terra_key_private.asc'
 jobs:
   - job: build_provider
     displayName: 'Build Terraform Provider'
@@ -25,19 +28,24 @@ jobs:
     - task: DownloadSecureFile@1
       name: gpgKey
       inputs:
-        secureFile: 'private-key2.gpg'
+        secureFile: '$(secureFileName)'
 
     - script: |
         echo "Checking the GPG key file..."
         ls -lh $(gpgKey.secureFilePath)
         sha256sum $(gpgKey.secureFilePath)
       displayName: 'Check GPG Key File'
-    #
+
     - script: |
         sudo apt-get update
         sudo apt-get install -y wget build-essential libbz2-dev zlib1g-dev libsqlite3-dev libssl-dev libreadline-dev libffi-dev
         sudo apt-get install -y libassuan-dev libnpth0-dev
       displayName: 'Install Dependencies'
+
+    - script: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libgcrypt20-dev libgpg-error-dev libassuan-dev libksba-dev libnpth0-dev
+      displayName: 'Install GnuPG and cryptographic dependencies'
 
     - script: |
         wget https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.46.tar.bz2
@@ -84,8 +92,8 @@ jobs:
       displayName: 'Install Go'
 
     - script: |
-        version=$(git describe --tags $(git rev-list --tags --max-count=1))
-        version=$(echo "$version" | sed 's/^v//') # This uses sed to remove the 'v' from the start of $version
+        version=$(git describe --tags --abbrev=0)
+        version=$(echo "$version" | sed 's/^v//') # Remove leading 'v' if present
         echo "##vso[task.setvariable variable=releaseVersion]$version"
         echo $version
       displayName: 'Get Version Number from Tag'
@@ -171,13 +179,12 @@ jobs:
 
     - script: |
         echo "Creating GitHub release..."
-        # Set the GitHub PAT
-        export GITHUB_TOKEN=$(GitHubPAT)
-        # Create a release using the GitHub CLI
-        gh release create $(releaseVersion) ./artifacts/* \
-          --repo $(repoName) \
+        export GITHUB_TOKEN=$(GITHUB_PAT)
+        export repoName=$(repoName)
+        gh release create "$(releaseVersion)" ./artifacts/* \
+          --repo "$repoName" \
           --title "Release $(releaseVersion)" \
           --notes "Release notes for $(releaseVersion)"
       displayName: 'Create GitHub Release'
       env:
-        GITHUB_TOKEN: $(GitHubPAT)
+        GITHUB_TOKEN: $(GITHUB_PAT)
