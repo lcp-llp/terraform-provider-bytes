@@ -12,6 +12,17 @@ description: |-
 Creates a new Azure subscription.
 
 This resources is intended to be used to create a new Azure subscription
+## Import
+
+You can import an existing subscription resource using its unique subscription ID:
+
+```shell
+terraform import bytes_subscription.example <subscription_id>
+```
+
+Where `<subscription_id>` is the unique ID assigned by Bytes to the subscription resource. This will populate the Terraform state with the resource details.
+
+**Note:** Only the subscription ID should be used for import, not the order ID.
 
 ## Example Usage
 
