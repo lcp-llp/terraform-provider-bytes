@@ -147,26 +147,22 @@ func resourceSubscriptionImportState(ctx context.Context, d *schema.ResourceData
     c := m.(*client.Client)
     importID := d.Id()
 
-    // Fetch subscription details using the import ID
-    subscription, err := c.GetSubscriptionDetails(importID)
+	// Fetch subscription details using the import ID
+	subscription, err := c.GetOrderDetails(importID)
     if err != nil {
         return nil, fmt.Errorf("failed to import subscription with id %s: %s", importID, err)
     }
 
-    // Set all relevant fields in the state
-    d.SetId(fmt.Sprintf("%d", subscription.ID))
-    d.Set("contract_name", subscription.ContractName)
-    d.Set("create_date", subscription.CreateDate)
-	d.Set("budget_code", subscription.BudgetCode)
-	d.Set("division_id", subscription.DivisionID)
-	d.Set.("po_number", subscription.PONumber)
+	// Set all relevant fields in the state
+	d.SetId(fmt.Sprintf("%d", subscription.ID))
+	d.Set("contract_name", subscription.ContractName)
 
-    if len(subscription.Items) > 0 {
-        d.Set("subscription_id", subscription.Items[0].SubscriptionID)
-        d.Set("friendly_name", subscription.Items[0].FriendlyName)
-        d.Set("po_number", subscription.Items[0].PONumber)
-        d.Set("default_admin", subscription.Items[0].PrincipalID)
-    }
+	if len(subscription.Items) > 0 {
+		d.Set("subscription_id", subscription.Items[0].SubscriptionID)
+		d.Set("friendly_name", subscription.Items[0].FriendlyName)
+		d.Set("po_number", subscription.Items[0].PONumber)
+		d.Set("default_admin", subscription.Items[0].PrincipalID)
+	}
 
     return []*schema.ResourceData{d}, nil
 }
