@@ -16,6 +16,9 @@ func resourceSubscription() *schema.Resource {
 		ReadContext:   resourceSubscriptionRead,
 		UpdateContext: resourceSubscriptionUpdate,
 		DeleteContext: resourceSubscriptionDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceSubscriptionImportState,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
@@ -138,4 +141,32 @@ func resourceSubscriptionUpdate(ctx context.Context, d *schema.ResourceData, m i
 func resourceSubscriptionDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	// No-op, do nothing when deleting, not currently supported by Bytes API
 	return nil
+}
+
+func resourceSubscriptionImportState(ctx context.Context, d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+    c := m.(*client.Client)
+    importID := d.Id()
+
+    // Fetch subscription details using the import ID
+    subscription, err := c.GetSubscriptionDetails(importID)
+    if err != nil {
+        return nil, fmt.Errorf("failed to import subscription with id %s: %s", importID, err)
+    }
+
+    // Set all relevant fields in the state
+    d.SetId(fmt.Sprintf("%d", subscription.ID))
+    d.Set("contract_name", subscription.ContractName)
+    d.Set("create_date", subscription.CreateDate)
+	d.Set("budget_code", subscription.BudgetCode)
+	d.Set("division_id", subscription.DivisionID)
+	d.Set.("po_number", subscription.PONumber)
+
+    if len(subscription.Items) > 0 {
+        d.Set("subscription_id", subscription.Items[0].SubscriptionID)
+        d.Set("friendly_name", subscription.Items[0].FriendlyName)
+        d.Set("po_number", subscription.Items[0].PONumber)
+        d.Set("default_admin", subscription.Items[0].PrincipalID)
+    }
+
+    return []*schema.ResourceData{d}, nil
 }
